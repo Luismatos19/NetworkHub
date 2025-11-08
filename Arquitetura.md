@@ -47,7 +47,7 @@ CREATE TABLE participation_intentions (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Convites para Cadastro (Módulo Obrigatório)
+-- Convites para Cadastro
 CREATE TABLE registration_invites (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     intention_id UUID REFERENCES participation_intentions(id) ON DELETE CASCADE,
@@ -79,7 +79,7 @@ CREATE TABLE members (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Indicações de Negócios (Módulo Opcional A)
+-- Indicações de Negócios
 CREATE TABLE business_referrals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     referrer_id UUID REFERENCES members(id) NOT NULL,
@@ -92,7 +92,7 @@ CREATE TABLE business_referrals (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Obrigados (Agradecimentos)
+-- Obrigados
 CREATE TABLE acknowledgments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     referral_id UUID REFERENCES business_referrals(id) ON DELETE CASCADE,
