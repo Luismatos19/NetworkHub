@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ParticipationIntention {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  company    String?
+  message    String?  @db.Text
+  status     String   @default("pending") // pending, approved, rejected
+  reviewedAt DateTime? @map("reviewed_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  registrationInvite RegistrationInvite?
+
+  @@map("participation_intentions")
+  @@index([status])
+}
+
+model RegistrationInvite {
+  id         String   @id @default(uuid())
+  intentionId String  @unique @map("intention_id")
+  token      String   @unique
+  email      String
+  expiresAt  DateTime @map("expires_at")
+  usedAt     DateTime? @map("used_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  intention ParticipationIntention @relation(fields: [intentionId], references: [id], onDelete: Cascade)
+
+  @@map("registration_invites")
+  @@index([token])
+  @@index([email])
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("member") // admin, member
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  member Member?
+
+  @@map("users")
+}
+
+model Member {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  name      String
+  company   String?
+  phone     String?
+  bio       String?  @db.Text
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  referralsSent     BusinessReferral[] @relation("Referrer")
+  referralsReceived BusinessReferral[] @relation("Referred")
+  acknowledgmentsSent     Acknowledgment[] @relation("FromMember")
+  acknowledgmentsReceived Acknowledgment[] @relation("ToMember")
+
+  @@map("members")
+}
+
+model BusinessReferral {
+  id          String   @id @default(uuid())
+  referrerId  String   @map("referrer_id")
+  referredId  String   @map("referred_id")
+  title       String
+  description String   @db.Text
+  value       Decimal? @db.Decimal(10, 2)
+  status      String   @default("pending") // pending, in_progress, closed, lost
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  referrer Member @relation("Referrer", fields: [referrerId], references: [id])
+  referred Member @relation("Referred", fields: [referredId], references: [id])
+
+  acknowledgments Acknowledgment[]
+
+  @@map("business_referrals")
+  @@index([referrerId])
+  @@index([referredId])
+  @@index([status])
+}
+
+model Acknowledgment {
+  id           String   @id @default(uuid())
+  referralId   String   @map("referral_id")
+  fromMemberId String   @map("from_member_id")
+  toMemberId   String   @map("to_member_id")
+  message      String   @db.Text
+  isPublic     Boolean  @default(true) @map("is_public")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  referral BusinessReferral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  fromMember Member @relation("FromMember", fields: [fromMemberId], references: [id])
+  toMember   Member @relation("ToMember", fields: [toMemberId], references: [id])
+
+  @@map("acknowledgments")
+}
+

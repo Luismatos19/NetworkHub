@@ -1,0 +1,20 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+COPY apps/frontend/package.json ./apps/frontend/
+COPY packages ./packages
+
+RUN npm ci
+
+COPY . .
+
+WORKDIR /app
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+CMD ["sh", "-c", "cd apps/frontend && npm run dev"]
+

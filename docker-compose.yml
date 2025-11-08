@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: networkhubs-db
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: networkhubs-backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      PORT: ${BACKEND_PORT:-3001}
+      FRONTEND_URL: http://frontend:${FRONTEND_PORT:-3000}
+      ADMIN_SECRET: ${ADMIN_SECRET}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma migrate deploy && node dist/main.js"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: networkhubs-frontend
+    env_file:
+      - .env
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/api}
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

@@ -1,111 +1,64 @@
 # NetworkHubs
 
-Monorepo para NetworkHubs com backend NestJS e frontend Next.js.
+Plataforma de gestão para grupos de networking com backend NestJS e frontend Next.js.
 
-## Estrutura do Projeto
+## 🚀 Início Rápido
 
-Este monorepo contém:
-
-### Apps
-
-- **`apps/backend`**: API backend construída com [NestJS](https://nestjs.com/)
-- **`apps/frontend`**: Aplicação frontend construída com [Next.js](https://nextjs.org/)
-
-### Packages
-
-- **`@repo/ui`**: Biblioteca de componentes React compartilhados
-- **`@repo/eslint-config`**: Configurações ESLint compartilhadas
-- **`@repo/typescript-config`**: Configurações TypeScript compartilhadas
-
-## Pré-requisitos
-
-- Node.js >= 18
-- npm >= 11.6.2
-
-## Instalação
-
-Instale as dependências de todos os workspaces:
+### Com Docker (Recomendado)
 
 ```bash
-npm install
+docker-compose up -d --build
 ```
 
-## Desenvolvimento
+Acesse:
 
-Para rodar todos os apps em modo de desenvolvimento:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001/api
+
+### Sem Docker
+
+Veja [COMO_RODAR.md](./COMO_RODAR.md) para instruções detalhadas.
+
+## 📚 Documentação
+
+- [COMO_RODAR.md](./COMO_RODAR.md) - Guia de instalação e execução
+- [DOCKER.md](./DOCKER.md) - Guia completo de Docker
+- [SETUP.md](./SETUP.md) - Configuração detalhada
+- [Arquitetura.md](./Arquitetura.md) - Documentação de arquitetura
+- [apps/backend/REFACTORING.md](./apps/backend/REFACTORING.md) - Refatoração e Clean Code
+
+## 🛠️ Tecnologias
+
+- **Backend**: NestJS, Prisma, PostgreSQL
+- **Frontend**: Next.js, React, TypeScript
+- **Monorepo**: Turborepo
+- **Containerização**: Docker, Docker Compose
+
+## 📦 Estrutura
+
+```
+networkhubs/
+├── apps/
+│   ├── backend/     # API NestJS
+│   └── frontend/     # App Next.js
+├── packages/         # Packages compartilhados
+└── docker-compose.yml
+```
+
+## 🔧 Comandos Principais
 
 ```bash
+# Desenvolvimento
 npm run dev
-```
 
-Para rodar um app específico:
-
-```bash
-# Frontend (porta 3000)
-npm run dev --workspace=frontend
-
-# Backend (porta 3001)
-npm run dev --workspace=backend
-```
-
-## Build
-
-Para fazer build de todos os apps e packages:
-
-```bash
+# Build
 npm run build
+
+# Docker
+docker-compose up -d
+docker-compose down
 ```
 
-Para fazer build de um app específico:
+## 📝 Licença
 
-```bash
-npm run build --workspace=frontend
-npm run build --workspace=backend
-```
-
-## Scripts Disponíveis
-
-- `npm run dev` - Inicia todos os apps em modo de desenvolvimento
-- `npm run build` - Faz build de todos os apps e packages
-- `npm run lint` - Executa lint em todos os projetos
-- `npm run check-types` - Verifica tipos TypeScript em todos os projetos
-- `npm run format` - Formata código com Prettier
-
-## Tecnologias
-
-- **Turborepo**: Build system e gerenciamento de monorepo
-- **NestJS**: Framework Node.js para backend
-- **Next.js**: Framework React para frontend
-- **TypeScript**: Linguagem de programação
-- **ESLint**: Linter de código
-- **Prettier**: Formatador de código
-
-## Estrutura de Portas
-
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3001`
-
-## Variáveis de Ambiente
-
-### Backend
-
-Crie um arquivo `.env` em `apps/backend/`:
-
-```
-PORT=3001
-FRONTEND_URL=http://localhost:3000
-```
-
-### Frontend
-
-Crie um arquivo `.env.local` em `apps/frontend/` se necessário:
-
-```
-NEXT_PUBLIC_API_URL=http://localhost:3001
-```
-
-## Links Úteis
-
-- [Turborepo Documentation](https://turborepo.com/docs)
-- [NestJS Documentation](https://docs.nestjs.com/)
-- [Next.js Documentation](https://nextjs.org/docs)
+Private

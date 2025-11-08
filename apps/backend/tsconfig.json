@@ -2,6 +2,7 @@
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
     "module": "commonjs",
+    "moduleResolution": "node",
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -17,7 +18,10 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
