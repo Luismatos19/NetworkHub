@@ -14,7 +14,7 @@ Plataforma de gestão para grupos de networking com backend NestJS e frontend Ne
 cp env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações (veja [ENV_SETUP.md](./ENV_SETUP.md)).
+Edite o arquivo `.env` com suas configurações (veja env.example).
 
 ### 2. Iniciar aplicação
 
