@@ -1,52 +1,47 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { referralsAPI } from '@/lib/api';
-import Input from '@/components/ui/Input';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import ErrorAlert from "@/components/common/ErrorAlert";
+import { useMemberSession } from "@/hooks/useMemberSession";
+import { useCreateAcknowledgment } from "@/hooks/useCreateAcknowledgment";
 
 export default function AcknowledgmentPage() {
   const params = useParams();
   const router = useRouter();
   const referralId = params.id as string;
 
-  const [memberId, setMemberId] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const { memberId, hasMember } = useMemberSession();
+  const { submit, isSubmitting, error, clearError } = useCreateAcknowledgment(
+    memberId,
+    referralId
+  );
+
   const [formData, setFormData] = useState({
-    message: '',
+    message: "",
     isPublic: true,
   });
 
   useEffect(() => {
-    const savedMemberId = localStorage.getItem('member_id');
-    if (savedMemberId) {
-      setMemberId(savedMemberId);
-    } else {
-      router.push('/referrals');
+    if (!hasMember) {
+      router.push("/referrals");
     }
-  }, [router]);
+  }, [hasMember, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
     try {
-      await referralsAPI.createAcknowledgment(memberId, referralId, {
+      await submit({
         message: formData.message,
         isPublic: formData.isPublic,
       });
 
-      alert('Agradecimento criado com sucesso!');
-      router.push('/referrals');
-    } catch (err: any) {
-      setError(err.message || 'Erro ao criar agradecimento');
-    } finally {
-      setIsLoading(false);
-    }
+      alert("Agradecimento criado com sucesso!");
+      router.push("/referrals");
+    } catch {}
   };
 
   return (
@@ -66,8 +61,8 @@ export default function AcknowledgmentPage() {
               rows={6}
               required
               value={formData.message}
-              onChange={(e) =>
-                setFormData({ ...formData, message: e.target.value })
+              onChange={(event) =>
+                setFormData({ ...formData, message: event.target.value })
               }
               placeholder="Ex: Muito obrigado pela indicação! O negócio foi fechado com sucesso."
             />
@@ -79,8 +74,8 @@ export default function AcknowledgmentPage() {
               id="isPublic"
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               checked={formData.isPublic}
-              onChange={(e) =>
-                setFormData({ ...formData, isPublic: e.target.checked })
+              onChange={(event) =>
+                setFormData({ ...formData, isPublic: event.target.checked })
               }
             />
             <label htmlFor="isPublic" className="ml-2 text-sm text-gray-700">
@@ -88,20 +83,16 @@ export default function AcknowledgmentPage() {
             </label>
           </div>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
+          <ErrorAlert message={error} onClose={clearError} />
 
           <div className="flex gap-4">
-            <Button type="submit" isLoading={isLoading} className="flex-1">
+            <Button type="submit" isLoading={isSubmitting} className="flex-1">
               Criar Agradecimento
             </Button>
             <Button
               type="button"
               variant="secondary"
-              onClick={() => router.push('/referrals')}
+              onClick={() => router.push("/referrals")}
             >
               Cancelar
             </Button>
@@ -111,4 +102,3 @@ export default function AcknowledgmentPage() {
     </div>
   );
 }
-
