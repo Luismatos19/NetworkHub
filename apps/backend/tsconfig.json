@@ -21,9 +21,12 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "../../node_modules/@types",
+      "./src/common/types"
+    ]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
-

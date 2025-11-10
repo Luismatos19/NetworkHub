@@ -8,36 +8,36 @@ datasource db {
 }
 
 model ParticipationIntention {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   name       String
   email      String
   phone      String?
   company    String?
-  message    String?  @db.Text
-  status     String   @default("pending") // pending, approved, rejected
+  message    String?   @db.Text
+  status     String    @default("pending") // pending, approved, rejected
   reviewedAt DateTime? @map("reviewed_at")
-  createdAt  DateTime @default(now()) @map("created_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
 
   registrationInvite RegistrationInvite?
 
-  @@map("participation_intentions")
   @@index([status])
+  @@map("participation_intentions")
 }
 
 model RegistrationInvite {
-  id         String   @id @default(uuid())
-  intentionId String  @unique @map("intention_id")
-  token      String   @unique
-  email      String
-  expiresAt  DateTime @map("expires_at")
-  usedAt     DateTime? @map("used_at")
-  createdAt  DateTime @default(now()) @map("created_at")
+  id          String    @id @default(uuid())
+  intentionId String    @unique @map("intention_id")
+  token       String    @unique
+  email       String
+  expiresAt   DateTime  @map("expires_at")
+  usedAt      DateTime? @map("used_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   intention ParticipationIntention @relation(fields: [intentionId], references: [id], onDelete: Cascade)
 
-  @@map("registration_invites")
   @@index([token])
   @@index([email])
+  @@map("registration_invites")
 }
 
 model User {
@@ -64,10 +64,10 @@ model Member {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  referralsSent     BusinessReferral[] @relation("Referrer")
-  referralsReceived BusinessReferral[] @relation("Referred")
-  acknowledgmentsSent     Acknowledgment[] @relation("FromMember")
-  acknowledgmentsReceived Acknowledgment[] @relation("ToMember")
+  referralsSent           BusinessReferral[] @relation("Referrer")
+  referralsReceived       BusinessReferral[] @relation("Referred")
+  acknowledgmentsSent     Acknowledgment[]   @relation("FromMember")
+  acknowledgmentsReceived Acknowledgment[]   @relation("ToMember")
 
   @@map("members")
 }
@@ -88,10 +88,10 @@ model BusinessReferral {
 
   acknowledgments Acknowledgment[]
 
-  @@map("business_referrals")
   @@index([referrerId])
   @@index([referredId])
   @@index([status])
+  @@map("business_referrals")
 }
 
 model Acknowledgment {
@@ -103,10 +103,9 @@ model Acknowledgment {
   isPublic     Boolean  @default(true) @map("is_public")
   createdAt    DateTime @default(now()) @map("created_at")
 
-  referral BusinessReferral @relation(fields: [referralId], references: [id], onDelete: Cascade)
-  fromMember Member @relation("FromMember", fields: [fromMemberId], references: [id])
-  toMember   Member @relation("ToMember", fields: [toMemberId], references: [id])
+  referral   BusinessReferral @relation(fields: [referralId], references: [id], onDelete: Cascade)
+  fromMember Member           @relation("FromMember", fields: [fromMemberId], references: [id])
+  toMember   Member           @relation("ToMember", fields: [toMemberId], references: [id])
 
   @@map("acknowledgments")
 }
-

@@ -2,9 +2,9 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-16">
       <div className="max-w-md w-full space-y-8 text-center">
-        <h1 className="text-4xl font-bold text-gray-900">NetworkHubs</h1>
+        <h1 className="text-4xl font-bold text-gray-900">Bem-vindo ao NetworkHubs</h1>
         <p className="text-gray-600">Plataforma de Gestão para Grupos de Networking</p>
         <div className="space-y-4 mt-8">
           <Link

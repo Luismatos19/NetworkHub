@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
 export interface ParticipationIntention {
   id: string;
@@ -40,19 +40,22 @@ export interface BusinessReferral {
 
 async function fetchAPI(
   endpoint: string,
-  options: RequestInit = {},
+  options: RequestInit = {}
 ): Promise<any> {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
   const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
     ...options,
+    headers,
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-    throw new Error(error.message || 'Erro na requisição');
+    const error = await response
+      .json()
+      .catch(() => ({ message: "Erro desconhecido" }));
+    throw new Error(error.message || "Erro na requisição");
   }
 
   return response.json();
@@ -65,93 +68,107 @@ export const participationIntentionsAPI = {
     phone?: string;
     company?: string;
     message?: string;
-  }) => fetchAPI('/participation-intentions', {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
+  }) =>
+    fetchAPI("/participation-intentions", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
-  list: (adminSecret: string, status?: string) => fetchAPI(
-    `/participation-intentions/admin${status ? `?status=${status}` : ''}`,
-    {
-      headers: { 'x-admin-secret': adminSecret },
-    },
-  ),
+  list: (adminSecret: string, status?: string) =>
+    fetchAPI(
+      `/participation-intentions/admin${status ? `?status=${status}` : ""}`,
+      {
+        headers: { "x-admin-secret": adminSecret },
+      }
+    ),
 
-  approve: (id: string, adminSecret: string) => fetchAPI(
-    `/participation-intentions/admin/${id}/approve`,
-    {
-      method: 'PATCH',
-      headers: { 'x-admin-secret': adminSecret },
-    },
-  ),
+  approve: (id: string, adminSecret: string) =>
+    fetchAPI(`/participation-intentions/admin/${id}/approve`, {
+      method: "PATCH",
+      headers: { "x-admin-secret": adminSecret },
+    }),
 
-  reject: (id: string, adminSecret: string) => fetchAPI(
-    `/participation-intentions/admin/${id}/reject`,
-    {
-      method: 'PATCH',
-      headers: { 'x-admin-secret': adminSecret },
-    },
-  ),
+  reject: (id: string, adminSecret: string) =>
+    fetchAPI(`/participation-intentions/admin/${id}/reject`, {
+      method: "PATCH",
+      headers: { "x-admin-secret": adminSecret },
+    }),
 };
 
 export const registrationAPI = {
   validateToken: (token: string) => fetchAPI(`/register/validate/${token}`),
 
-  register: (token: string, data: {
-    name: string;
-    email: string;
-    password: string;
-    company?: string;
-    phone?: string;
-    bio?: string;
-  }) => fetchAPI(`/register/${token}`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
+  register: (
+    token: string,
+    data: {
+      name: string;
+      email: string;
+      password: string;
+      company?: string;
+      phone?: string;
+      bio?: string;
+    }
+  ) =>
+    fetchAPI(`/register/${token}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };
 
 export const referralsAPI = {
-  getMembers: (memberId: string) => fetchAPI('/referrals/members', {
-    headers: { 'x-member-id': memberId },
-  }),
+  getAllMembers: () => fetchAPI("/referrals/members"),
 
-  create: (memberId: string, data: {
-    referredId: string;
-    title: string;
-    description: string;
-    value?: number;
-  }) => fetchAPI('/referrals', {
-    method: 'POST',
-    headers: { 'x-member-id': memberId },
-    body: JSON.stringify(data),
-  }),
+  getMemberByEmail: (email: string) =>
+    fetchAPI(`/referrals/members/by-email/${encodeURIComponent(email)}`),
+
+  getMembers: (memberId: string) =>
+    fetchAPI("/referrals/members", {
+      headers: { "x-member-id": memberId },
+    }),
+
+  create: (
+    memberId: string,
+    data: {
+      referredId: string;
+      title: string;
+      description: string;
+      value?: number;
+    }
+  ) =>
+    fetchAPI("/referrals", {
+      method: "POST",
+      headers: { "x-member-id": memberId },
+      body: JSON.stringify(data),
+    }),
 
   list: (memberId: string, type?: string, status?: string) => {
     const params = new URLSearchParams();
-    if (type) params.append('type', type);
-    if (status) params.append('status', status);
+    if (type) params.append("type", type);
+    if (status) params.append("status", status);
     const query = params.toString();
-    return fetchAPI(`/referrals${query ? `?${query}` : ''}`, {
-      headers: { 'x-member-id': memberId },
+    return fetchAPI(`/referrals${query ? `?${query}` : ""}`, {
+      headers: { "x-member-id": memberId },
     });
   },
 
-  updateStatus: (memberId: string, id: string, status: string) => fetchAPI(
-    `/referrals/${id}/status`,
-    {
-      method: 'PATCH',
-      headers: { 'x-member-id': memberId },
+  updateStatus: (memberId: string, id: string, status: string) =>
+    fetchAPI(`/referrals/${id}/status`, {
+      method: "PATCH",
+      headers: { "x-member-id": memberId },
       body: JSON.stringify({ status }),
-    },
-  ),
+    }),
 
-  createAcknowledgment: (memberId: string, id: string, data: {
-    message: string;
-    isPublic?: boolean;
-  }) => fetchAPI(`/referrals/${id}/acknowledgments`, {
-    method: 'POST',
-    headers: { 'x-member-id': memberId },
-    body: JSON.stringify(data),
-  }),
+  createAcknowledgment: (
+    memberId: string,
+    id: string,
+    data: {
+      message: string;
+      isPublic?: boolean;
+    }
+  ) =>
+    fetchAPI(`/referrals/${id}/acknowledgments`, {
+      method: "POST",
+      headers: { "x-member-id": memberId },
+      body: JSON.stringify(data),
+    }),
 };
-
