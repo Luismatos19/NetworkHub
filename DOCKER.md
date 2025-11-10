@@ -10,7 +10,7 @@ Copie o exemplo e configure:
 cp env.example .env
 ```
 
-Edite o arquivo `.env` com suas configurações (veja [ENV_SETUP.md](./ENV_SETUP.md)).
+Edite o arquivo `.env` com suas configurações (veja [env.example](./env.example)).
 
 ### 2. Iniciar aplicação
 
